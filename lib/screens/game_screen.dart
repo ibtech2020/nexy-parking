@@ -9,6 +9,7 @@ import 'package:vibration/vibration.dart';
 import '../game/park_master_game.dart';
 import '../game/car_physics.dart';
 import '../core/app_theme.dart';
+import '../audio/audio_service.dart';
 import '../widgets/steering_wheel_widget.dart';
 import '../widgets/pedal_widget.dart';
 import '../widgets/hud_overlay.dart';
@@ -33,6 +34,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
   bool _paused = false;
   final FocusNode _focusNode = FocusNode();
   final Set<LogicalKeyboardKey> _keysHeld = {};
+  final AudioService _audio = AudioService();
 
   late AnimationController _damageFlashCtrl;
   late Animation<double> _damageFlash;
@@ -52,6 +54,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
         CurvedAnimation(parent: _parkFlashCtrl, curve: Curves.easeOut);
     _game = _buildGame();
     WidgetsBinding.instance.addPostFrameCallback((_) => _focusNode.requestFocus());
+    _audio.init().then((_) {
+      _audio.startGameMusic();
+      _audio.startEngine();
+    });
   }
 
   ParkMasterGame _buildGame() {
@@ -63,9 +69,11 @@ class _GameScreenState extends ConsumerState<GameScreen>
         setState(() => _status = status);
         if (status == GameStatus.parked) {
           _parkFlashCtrl.forward(from: 0);
+          _audio.playParkSuccess();
           Vibration.vibrate(pattern: [0, 100, 50, 200], amplitude: 255);
         } else if (status == GameStatus.playing) {
           _damageFlashCtrl.forward(from: 0);
+          _audio.playCollision(10);
           Vibration.vibrate(duration: 80, amplitude: 128);
         }
       });
@@ -75,6 +83,8 @@ class _GameScreenState extends ConsumerState<GameScreen>
       scheduleMicrotask(() {
         if (!mounted) return;
         setState(() => _carState = state);
+        _audio.updateEngineRpm(state.rpm, state.spec.maxRpm);
+        if (state.isSkidding) _audio.playSkid();
       });
     };
     game.onScoreUpdate = (time, hits) {
@@ -134,6 +144,9 @@ class _GameScreenState extends ConsumerState<GameScreen>
     _focusNode.dispose();
     _damageFlashCtrl.dispose();
     _parkFlashCtrl.dispose();
+    _audio.stopEngine();
+    _audio.stopMusic();
+    _audio.dispose();
     super.dispose();
   }
 
@@ -196,6 +209,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
                     current: _game.selectedGear,
                     onChanged: (g) {
                       setState(() => _game.setGear(g));
+                      _audio.playGearShift();
                       Vibration.vibrate(duration: 30, amplitude: 60);
                     },
                   ),

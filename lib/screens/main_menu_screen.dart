@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../audio/audio_service.dart';
 import '../core/app_theme.dart';
 
 class MainMenuScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
     with TickerProviderStateMixin {
   late AnimationController _bgCtrl;
   late AnimationController _titleCtrl;
+  final AudioService _audio = AudioService();
 
   @override
   void initState() {
@@ -22,12 +24,15 @@ class _MainMenuScreenState extends State<MainMenuScreen>
       ..repeat();
     _titleCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 800))
       ..forward();
+    _audio.init().then((_) => _audio.startMenuMusic());
   }
 
   @override
   void dispose() {
     _bgCtrl.dispose();
     _titleCtrl.dispose();
+    _audio.stopMusic();
+    _audio.dispose();
     super.dispose();
   }
 
