@@ -221,7 +221,6 @@ class _GameScreenState extends ConsumerState<GameScreen>
 
   Widget _buildControls() {
     final screenW = MediaQuery.of(context).size.width;
-    final screenH = MediaQuery.of(context).size.height;
     final isMobile = screenW < 600;
     final wheelSize = isMobile ? 100.0 : 130.0;
     final pedalW = isMobile ? 72.0 : 100.0;
@@ -241,18 +240,21 @@ class _GameScreenState extends ConsumerState<GameScreen>
           ),
         ),
 
-        // ---- CENTER-LEFT: Gear selector (above steering on mobile) ----
+        // ---- BOTTOM CENTER: Gear selector ----
         Positioned(
-          bottom: bottomPad + wheelSize + 6,
-          left: 10,
-          child: GearSelectorWidget(
-            compact: isMobile,
-            current: _game.selectedGear,
-            onChanged: (g) {
-              setState(() => _game.setGear(g));
-              _audio.playGearShift();
-              Vibration.vibrate(duration: 30, amplitude: 60);
-            },
+          bottom: bottomPad,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: GearSelectorWidget(
+              compact: isMobile,
+              current: _game.selectedGear,
+              onChanged: (g) {
+                setState(() => _game.setGear(g));
+                _audio.playGearShift();
+                Vibration.vibrate(duration: 30, amplitude: 60);
+              },
+            ),
           ),
         ),
 

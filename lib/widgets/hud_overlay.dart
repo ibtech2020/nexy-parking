@@ -95,7 +95,7 @@ class HudOverlay extends StatelessWidget {
 
         // ---- BOTTOM LEFT: compact gauges (KM/H | GEAR | RPM) ----
         Positioned(
-          bottom: isMobile ? 170 : 150,
+          bottom: isMobile ? 200 : 180,
           left: isMobile ? 10 : 16,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -119,7 +119,7 @@ class HudOverlay extends StatelessWidget {
 
         // ---- RPM bar under gauges ----
         Positioned(
-          bottom: isMobile ? 164 : 144,
+          bottom: isMobile ? 194 : 174,
           left: isMobile ? 10 : 16,
           width: 120,
           child: _rpmBar(rpm, carState?.spec.maxRpm ?? 6500),

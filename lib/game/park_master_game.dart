@@ -173,8 +173,9 @@ class ParkMasterGame extends FlameGame with HasCollisionDetection {
     double angleDiff = (carState.angle - spot.angle).abs() % (2 * pi);
     if (angleDiff > pi) angleDiff = 2 * pi - angleDiff;
 
-    final inZone = dist < 24 && angleDiff < 0.4 && carState.speed.abs() < 2.0;
-    parkingZone.setProximity(dist < 80);
+    // Loosened: dist < 40 (was 24), angleDiff < 0.8 (was 0.4), speed < 5 (was 2)
+    final inZone = dist < 40 && angleDiff < 0.8 && carState.speed.abs() < 5.0;
+    parkingZone.setProximity(dist < 100);
 
     if (inZone) {
       parkHoldTimer += dt;
