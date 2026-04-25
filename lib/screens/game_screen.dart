@@ -228,6 +228,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
     final bottomPad = isMobile ? 12.0 : 24.0;
 
     return Stack(
+      fit: StackFit.expand,
       children: [
         // ---- LEFT: Steering wheel ----
         Positioned(
@@ -241,11 +242,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
         ),
 
         // ---- BOTTOM CENTER: Gear selector ----
-        Positioned(
-          bottom: bottomPad,
-          left: 0,
-          right: 0,
-          child: Center(
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: bottomPad),
             child: GearSelectorWidget(
               compact: isMobile,
               current: _game.selectedGear,
